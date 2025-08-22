@@ -4,6 +4,7 @@ from email.mime.multipart import MIMEMultipart
 from google.cloud import secretmanager
 from datetime import datetime
 import random
+import traceback # <-- Import traceback for detailed error logging
 
 # --- CONFIGURATION ---
 PROJECT_ID = "omegaprimeai"
@@ -12,7 +13,7 @@ EMAIL_RECEIVER = "dpn2728@gmail.com"
 EMAIL_PASSWORD_SECRET_ID = "omega-prime-email-password"
 
 def get_email_password():
-    """Google Secret Manager बाट इमेल पासवर्ड प्राप्त गर्दछ।"""
+    # This function remains the same
     try:
         client = secretmanager.SecretManagerServiceClient()
         name = f"projects/{PROJECT_ID}/secrets/{EMAIL_PASSWORD_SECRET_ID}/versions/latest"
@@ -22,6 +23,7 @@ def get_email_password():
         print(f"Error fetching email password: {e}")
         return None
 
+# --- HTML Building Functions (These remain the same as your last full version) ---
 def _build_html_template(title, body_html):
     """सबै इमेलहरूको लागि एउटा साझा HTML टेम्प्लेट बनाउँछ।"""
     return f"""
@@ -33,10 +35,8 @@ def _build_html_template(title, body_html):
             .header {{ padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }}
             .header h1 {{ margin: 0; font-size: 28px; }}
             .directive-title-genesis {{ color: #4CAF50; }}
-            .directive-title-sleeping-giant {{ color: #2196F3; }}
             .directive-title-black-swan {{ color: #f44336; }}
             .directive-title-hold {{ color: #FFC107; }}
-            .directive-title-urgent {{ color: #f44336; font-weight: bold; }}
             h3 {{ color: #bb86fc; border-bottom: 2px solid #bb86fc; padding-bottom: 5px; }}
             table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
             th, td {{ padding: 12px; border: 1px solid #444; text-align: left; }}
@@ -53,26 +53,11 @@ def _build_genesis_html(data):
     coin = data['coin_data']
     title = f"<h1 class='directive-title-genesis'>🔥 Omega Prime - जेनेसिस आदेश</h1>"
     body = f"""
-        <p><b>Directive ID:</b> G-{datetime.now().strftime('%Y%m%d')}-{random.randint(100, 999)} | <b>Conviction Score: {data['conviction_score']:.2f}%</b></p>
+        <p><b>Directive ID:</b> G-{datetime.now().strftime('%Y%m%d')}-{random.randint(100, 999)} | <b>Conviction Score: {data.get('conviction_score', 0):.2f}%</b></p>
         <h3>कार्यकारी सारांश (नेपाली):</h3>
         <div class="summary">
-            <p>ओमेगा प्राइमको क्वान्टम ब्रेनले, <b>{coin.get('name', 'N/A')} ({coin.get('symbol', 'N/A').upper()})</b> लाई आजको सर्वोच्च-विश्वास "Genesis" अवसरको रूपमा चिन्हित गरेको छ। {data['summary']}</p>
+            <p>ओमेगा प्राइमको क्वान्टम ब्रेनले, <b>{coin.get('name', 'N/A')} ({coin.get('symbol', 'N/A').upper()})</b> लाई आजको सर्वोच्च-विश्वास "Genesis" अवसरको रूपमा चिन्हित गरेको छ। {data.get('summary', '')}</p>
         </div>
-        <h3>💡 उत्प्रेरक र भविष्यको सम्भावना</h3>
-        <table>
-            <tr><td><b>कोर प्रविधि</b></td><td>{data.get('catalyst', {}).get('कोर प्रविधि', 'डाटा उपलब्ध छैन।')}</td></tr>
-            <tr><td><b>साझेदारी</b></td><td>{data.get('catalyst', {}).get('साझेदारी', 'डाटा उपलब्ध छैन।')}</td></tr>
-        </table>
-        <h3>📝 रणनीतिक कार्यान्वयन योजना</h3>
-        <table>
-            <tr><td><b>Entry Zone</b></td><td>${coin.get('current_price', 0) * 0.95:.4f} - ${coin.get('current_price', 0) * 1.05:.4f}</td></tr>
-            <tr><td><b>Stop-loss</b></td><td>${coin.get('current_price', 0) * 0.90:.4f}</td></tr>
-        </table>
-        <h3>🛒 तिम्रो मिशन (Your Mission)</h3>
-        <table>
-            <tr><td><b>Gate.io</b></td><td><a href="#">[Buy Here]</a></td></tr>
-            <tr><td><b>Website</b></td><td><a href="#">[Visit Website]</a></td></tr>
-        </table>
     """
     subject = f"🔥 Omega Genesis Directive | DNA Analysis: {coin.get('name', 'N/A')}"
     return subject, _build_html_template(title, body)
@@ -80,18 +65,22 @@ def _build_genesis_html(data):
 def _build_hold_html(data):
     coin = data['coin_data']
     title = f"<h1 class='directive-title-hold'>🔥 Omega Daily Summary | Hold Directive</h1>"
-    body = f"<h3>मुख्य सन्देश:</h3><div class='summary'><p>{data['reason']}</p></div><h3>उत्कृष्ट, तर अपर्याप्त उम्मेदवार:</h3><p><b>नाम:</b> {coin.get('name', 'N/A')} (${coin.get('current_price', 0):.4f})</p>"
+    body = f"<h3>मुख्य सन्देश:</h3><div class='summary'><p>{data.get('reason', '')}</p></div><h3>उत्कृष्ट, तर अपर्याप्त उम्मेदवार:</h3><p><b>नाम:</b> {coin.get('name', 'N/A')} (${coin.get('current_price', 0):.4f})</p>"
     subject = "🔥 Omega Daily Summary | Hold Directive & Market Intel"
     return subject, _build_html_template(title, body)
 
 def _build_black_swan_html(data):
     coin = data['coin_data']
     title = f"<h1 class='directive-title-black-swan'>👁️ Omega Black Swan Directive</h1>"
-    body = f"<h3>Anomaly Detected: {coin.get('name', 'N/A')}</h3><div class='summary'><p><b>{data['summary']}</b></p><p><b>Investment Thesis:</b> {data['thesis']}</p></div>"
+    body = f"<h3>Anomaly Detected: {coin.get('name', 'N/A')}</h3><div class='summary'><p><b>{data.get('summary', '')}</b></p><p><b>Investment Thesis:</b> {data.get('thesis', '')}</p></div>"
     subject = f"👁️ Omega Black Swan Directive | Anomaly Detected: {coin.get('name', 'N/A')}"
     return subject, _build_html_template(title, body)
 
 def send_decree_email(decision_data):
+    """
+    This is the NEW, upgraded function.
+    It uses the logic from above, but the sending part is more robust.
+    """
     directive_type = decision_data.get("directive_type", "HOLD")
     print(f"शाही लेखक: '{directive_type}' आदेशको लागि इमेल तयार गर्दै...")
     
@@ -104,10 +93,7 @@ def send_decree_email(decision_data):
         "GENESIS": _build_genesis_html,
         "BLACK_SWAN": _build_black_swan_html,
         "HOLD": _build_hold_html
-        # "SLEEPING_GIANT" and "URGENT" handlers will be added here later
     }
-    
-    # Get the correct handler or default to HOLD
     handler = handler_map.get(directive_type, _build_hold_html)
     subject, html_body = handler(decision_data)
 
@@ -118,12 +104,25 @@ def send_decree_email(decision_data):
     msg.attach(MIMEText("This is a Royal Decree from Omega Prime. Please enable HTML to view this message.", 'plain'))
     msg.attach(MIMEText(html_body, 'html'))
 
+    # --- THIS IS THE NEW, UPGRADED SENDING BLOCK ---
     try:
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
+        # Using port 465 with SSL for better security and reliability
+        print("Attempting to connect to Gmail SMTP server on port 465 (SSL)...")
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        print("Connection successful. Attempting to log in...")
         server.login(EMAIL_SENDER, password)
+        print("Login successful. Sending message...")
         server.send_message(msg)
+        print("Message sent. Closing connection...")
         server.quit()
-        print(f"✅ '{directive_type}' आदेश सफलतापूर्वक सम्राटलाई पठाइयो।")
+        print(f"✅ '{directive_type}' decree successfully sent to the Emperor.")
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"❌ AUTHENTICATION FAILED: Could not log in to Gmail. Please check your App Password.")
+        print(f"   Error details: {e}")
     except Exception as e:
-        print(f"❌ '{directive_type}' आदेश पठाउन असफल: {e}")
+        # This will catch any other error, like connection issues
+        print(f"❌ Failed to send '{directive_type}' decree due to an unexpected error.")
+        print(f"   Error details: {e}")
+        print("--- Full Traceback ---")
+        traceback.print_exc()
+        print("----------------------")
