@@ -1,1 +1,1 @@
-# Temporarily disabled technical analysis to fix runtime error
+# Final Permissions Granted to Cloud Build Service Account
