@@ -1,1 +1,1 @@
-# Fresh Trigger Created and Tested
+# Testing with simplified build config to verify permissions
