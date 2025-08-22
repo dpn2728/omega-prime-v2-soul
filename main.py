@@ -4,35 +4,29 @@ import time
 from flask import Flask
 from market import get_market_data
 from model import predict_with_quantum_brain
-from alerts import send_email_alert # <-- IMPORT THE MESSENGER
+from alerts import send_decree_email # <-- IMPORT THE NEW ROYAL SCRIBE
 
 app = Flask(__name__)
 
 @app.route('/')
 def health_check():
-    return "Omega Prime AI Agent is alive, thinking, and communicating.", 200
+    return "Omega Prime AI Agent is alive, thinking, and issuing decrees.", 200
 
 def main_cognitive_loop():
     print("--- Omega Prime Cognitive Loop Initializing ---")
     while True:
         print("\n--- Starting new cognitive cycle ---")
-
         market_df = get_market_data()
-
         if market_df is not None and not market_df.empty:
-            directive, candidate, reason = predict_with_quantum_brain(market_df)
-
-            print(f"Quantum Brain decision: {directive}. Reason: {reason}")
-
-            # Step 3: Send the decree to the Emperor
-            send_email_alert(directive, reason, candidate)
-
+            # Let the brain decide which decree to issue
+            decision_data = predict_with_quantum_brain(market_df)
+            
+            # Send the specific decree to the Emperor
+            send_decree_email(decision_data)
         else:
             print("Could not retrieve market data. No directive issued.")
-
+        
         print("--- Cognitive cycle complete. Sleeping for 23 hours. ---")
-        # We change this to 23 hours to ensure it runs once a day,
-        # accounting for the time the cycle itself takes.
         time.sleep(23 * 60 * 60)
 
 if __name__ == "__main__":
