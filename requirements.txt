@@ -1,0 +1,12 @@
+Flask
+requests
+pytz
+google-cloud-storage
+google-cloud-secret-manager
+pandas
+numpy
+scikit-learn==1.3.2
+joblib
+ccxt
+pandas-ta
+python-telegram-bot
