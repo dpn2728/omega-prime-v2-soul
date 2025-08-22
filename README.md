@@ -1,1 +1,1 @@
-# Deployed with a fresh App Password (vsta...)
+# Final attempt after verifying Google security activity
