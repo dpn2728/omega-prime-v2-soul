@@ -1,1 +1,1 @@
-# Added the Touch of Analysis sense to the agent
+# Temporarily disabled technical analysis to fix runtime error

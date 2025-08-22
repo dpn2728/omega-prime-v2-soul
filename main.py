@@ -3,14 +3,15 @@ import threading
 import time
 from flask import Flask
 from market import get_market_data
-from indicators import apply_technical_indicators # <-- IMPORT OUR NEW ABILITY
+# from indicators import apply_technical_indicators # <-- Temporarily disable this sense
 
 # --- Flask App Definition ---
 app = Flask(__name__)
 
 @app.route('/')
 def health_check():
-    return "Omega Prime AI Agent is alive, seeing, and analyzing.", 200
+    # Update the health check message
+    return "Omega Prime AI Agent is alive and seeing. Analysis module is on standby.", 200
 
 def main_cognitive_loop():
     """
@@ -24,18 +25,13 @@ def main_cognitive_loop():
         market_df = get_market_data()
 
         if market_df is not None and not market_df.empty:
-            # Step 2: Analyze the perceived data
-            # We need 'close' prices for indicators. CoinGecko provides 'current_price'.
-            # Let's rename it for compatibility with pandas-ta.
-            market_df.rename(columns={'current_price': 'close'}, inplace=True)
-            analyzed_df = apply_technical_indicators(market_df)
+            # The analysis step is temporarily disabled until we add historical data.
+            # analyzed_df = apply_technical_indicators(market_df)
 
-            if analyzed_df is not None:
-                # For now, let's print the analysis of the top 5 coins
-                print("Analysis of top 5 coins under $2:")
-                # Select only the columns we are interested in for the report
-                report_df = analyzed_df[['name', 'close', 'RSI', 'SMA50']].head(5)
-                print(report_df.to_string())
+            # For now, we will just print the data we have.
+            print("Top 5 coins found under $2 (Analysis module on standby):")
+            report_df = market_df[['name', 'current_price', 'market_cap']].head(5)
+            print(report_df.to_string())
         else:
             print("Could not retrieve market data. Skipping this cycle.")
 
