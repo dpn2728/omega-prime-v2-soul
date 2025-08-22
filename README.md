@@ -1,1 +1,1 @@
-# Deployed the 5 Royal Decrees email system
+# Deployed the Omniscient Strategist and Royal Scribe
