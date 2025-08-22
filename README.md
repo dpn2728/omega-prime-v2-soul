@@ -1,1 +1,1 @@
-# Added the Market Eye sense to the agent
+# Added the Touch of Analysis sense to the agent
