@@ -1,1 +1,1 @@
-# Deployed the final communication module
+# Forcing redeployment to use the new App Password
