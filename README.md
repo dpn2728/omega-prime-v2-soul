@@ -1,1 +1,1 @@
-# Deployed the Omniscient Strategist and Royal Scribe
+# Upgraded Cloud Run instance to 2Gi Memory and 1 vCPU
