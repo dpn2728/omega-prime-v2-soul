@@ -1,3 +1,10 @@
+# Final and guaranteed build configuration for Omega Prime
+# This configuration explicitly sets the logging mode within the build itself,
+# bypassing any trigger-level configuration issues.
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
 # 1. Build the container image
 - name: 'gcr.io/cloud-builders/docker'

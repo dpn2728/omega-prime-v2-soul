@@ -1,0 +1,19 @@
+# This is the final, corrected configuration for the Omega Prime deployment trigger.
+# It EXCLUDES the logging configuration, which will be added via a command-line flag during import.
+# Last Updated: August 22, 2025, 7:40 PM (UTC)
+
+# Trigger definition
+name: omega-prime-deploy-trigger
+description: Automatically builds and deploys the Omega Prime agent to Cloud Run on every push to the main branch.
+filename: cloudbuild.yaml
+
+# Source repository details from GitHub
+github:
+  owner: dpn2728
+  name: omega-prime-v2-soul
+  push:
+    branch: ^main$
+
+# Service account with necessary permissions
+# This account must have 'Cloud Run Admin' and 'Service Account User' roles.
+serviceAccount: projects/omegaprimeai/serviceAccounts/143047795970@cloudbuild.gserviceaccount.com

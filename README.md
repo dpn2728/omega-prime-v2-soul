@@ -1,1 +1,1 @@
-# Omega Prime AI Agent - Final Permissions Set
+# Final Fix: Logging configured inside cloudbuild.yaml
