@@ -3,19 +3,18 @@ import threading
 import time
 from flask import Flask
 from market import get_market_data
-# from indicators import apply_technical_indicators # <-- Temporarily disable this sense
+from model import predict_with_quantum_brain # <-- IMPORT THE BRAIN
 
 # --- Flask App Definition ---
 app = Flask(__name__)
 
 @app.route('/')
 def health_check():
-    # Update the health check message
-    return "Omega Prime AI Agent is alive and seeing. Analysis module is on standby.", 200
+    return "Omega Prime AI Agent is alive, seeing, and thinking.", 200
 
 def main_cognitive_loop():
     """
-    The main AI logic loop. It runs continuously in the background.
+    The main AI logic loop, now with a thinking brain.
     """
     print("--- Omega Prime Cognitive Loop Initializing ---")
     while True:
@@ -25,13 +24,16 @@ def main_cognitive_loop():
         market_df = get_market_data()
 
         if market_df is not None and not market_df.empty:
-            # The analysis step is temporarily disabled until we add historical data.
-            # analyzed_df = apply_technical_indicators(market_df)
+            # Step 2: Let the Quantum Brain think and make a decision
+            directive, candidate, reason = predict_with_quantum_brain(market_df)
 
-            # For now, we will just print the data we have.
-            print("Top 5 coins found under $2 (Analysis module on standby):")
-            report_df = market_df[['name', 'current_price', 'market_cap']].head(5)
-            print(report_df.to_string())
+            print(f"=== OMEGA PRIME DAILY DIRECTIVE ===")
+            print(f"Directive: {directive}")
+            print(f"Reason: {reason}")
+            if candidate is not None:
+                print(f"Top Candidate: {candidate['name']} (${candidate['current_price']})")
+            print(f"===================================")
+
         else:
             print("Could not retrieve market data. Skipping this cycle.")
 
