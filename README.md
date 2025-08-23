@@ -1,1 +1,1 @@
-# Deployed in Diagnostic Mode to find the final bug
+# Deployed with final, verified App Password (bwlo...)
