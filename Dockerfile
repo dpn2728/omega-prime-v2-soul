@@ -1,20 +1,23 @@
-# Use an official Python runtime as a parent image
+# Use an official lightweight Python image as a base.
 FROM python:3.11-slim
 
-# Set the working directory in the container
+# Set the working directory inside the container.
 WORKDIR /app
 
-# Copy the requirements file into the container at /app
-COPY requirements.txt .
+# Set environment variables to ensure logs are sent correctly.
+ENV PYTHONUNBUFFERED True
 
-# Install any needed packages specified in requirements.txt
+# Copy the list of required tools into the container.
+COPY requirements.txt requirements.txt
+
+# Install the tools.
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application's code into the container at /app
+# Copy the entire kingdom's code into the container.
 COPY . .
 
-# Make port 8080 available to the world outside this container
-EXPOSE 8080
-
-# Run main.py when the container launches
-CMD ["python", "main.py"]
+# The final command to make the AI alive.
+# Use Gunicorn, the professional server, to run our main application (main:app).
+# It will automatically listen on the port provided by Cloud Run ($PORT).
+# We set a long timeout (300 seconds) to allow for complex thinking.
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 300 main:app
