@@ -1,5 +1,2 @@
 Flask
 gunicorn
-requests
-pandas
-google-auth
