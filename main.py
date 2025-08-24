@@ -1,6 +1,7 @@
-from flask import Flask, jsonify
+import os # <-- The missing import has been added!
 import threading
 import time
+from flask import Flask, jsonify
 import market
 import model
 import alerts
@@ -33,6 +34,5 @@ if __name__ == "__main__":
     hunt_thread = threading.Thread(target=cognitive_loop)
     hunt_thread.daemon = True
     hunt_thread.start()
-    
     port = int(os.environ.get("PORT", 8080))
     app.run(debug=False, host='0.0.0.0', port=port)

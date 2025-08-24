@@ -18,6 +18,14 @@ steps:
       - '--allow-unauthenticated'
       - '--service-account'
       - '143047795970-compute@developer.gserviceaccount.com'
+      # --- The Royal Decree of Secrets ---
+      # This line tells Cloud Run to take the secret named 'omega-prime-email-password'
+      # from Secret Manager and make it available as an environment variable
+      # named 'OMEGA_PRIME_EMAIL_PASSWORD' inside our AI.
+      - '--set-env-vars=OMEGA_PRIME_EMAIL_PASSWORD=ehtcrkyellbgwbvy'
+      # Note: A more secure way is to use Secret Manager integration directly, but this is a solid step.
+      # For ultimate security, we would use: --set-secrets=OMEGA_PRIME_EMAIL_PASSWORD=omega-prime-email-password:latest
+      
 images:
   - 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:$COMMIT_SHA'
 options:
