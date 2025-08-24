@@ -1,30 +1,50 @@
 import smtplib
-import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from google.cloud import secretmanager
 
-# Gmail App Password Secret fetch
-def get_secret(secret_id="omega-prime-email-password"):
-    client = secretmanager.SecretManagerServiceClient()
-    name = f"projects/omegaprimeai/secrets/{secret_id}/versions/latest"
-    response = client.access_secret_version(name=name)
-    return response.payload.data.decode('UTF-8')
+# --- प्रत्यक्ष शाही कन्फिगरेसन (परीक्षणको लागि) ---
+EMAIL_SENDER = "dpn2728@gmail.com"
+EMAIL_RECEIVER = "dpn2728@gmail.com"
+EMAIL_PASSWORD = "ehtcrkyellbgwbvy" 
 
-smtp_user = "dpn2728@gmail.com"
-smtp_pass = get_secret()
+print("--- शाही लेखकको प्रत्यक्ष परीक्षा सुरु ---")
 
-# Email content
-msg = MIMEMultipart()
-msg['From'] = smtp_user
-msg['To'] = smtp_user   # Send to yourself for testing
-msg['Subject'] = "SMTP Test"
-msg.attach(MIMEText("Hello! This is a Gmail SMTP test using App Password.", 'plain'))
+try:
+    # इमेलको विषय र मुख्य भाग बनाउने
+    subject = "Omega Prime - Royal Scribe Test"
+    body = "सम्राट, यो ओमेगा प्राइमको शाही लेखकको तर्फबाट एक परीक्षण सन्देश हो। यदि तपाईंले यो प्राप्त गर्नुभयो भने, मेरो साँचो र ठेगाना सही छ।"
+    
+    msg = MIMEMultipart()
+    msg['From'] = EMAIL_SENDER
+    msg['To'] = EMAIL_RECEIVER
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
 
-# Send email
-context = ssl.create_default_context()
-with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-    server.login(smtp_user, smtp_pass)
-    server.sendmail(smtp_user, smtp_user, msg.as_string())
+    # Gmail को SMTP सर्भरसँग जडान गर्ने
+    print(f"Connecting to smtp.gmail.com:465 as {EMAIL_SENDER}...")
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    print("Connection successful.")
 
-print("✅ Email sent successfully!")
+    # लगइन गर्ने
+    print(f"Logging in with the key 'ehtc...wbvy'...")
+    server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+    print("Login successful.")
+
+    # इमेल पठाउने
+    print(f"Sending test email to {EMAIL_RECEIVER}...")
+    server.send_message(msg)
+    print("Email sent command issued.")
+    
+    # जडान बन्द गर्ने
+    server.quit()
+    print("Connection closed.")
+    print("\n✅✅✅ Test Email Sent Successfully! Please check your inbox. ✅✅✅")
+
+except smtplib.SMTPAuthenticationError as e:
+    print("\n🔥🔥🔥 FATAL SMTP ERROR: Authentication Failed. 🔥🔥🔥")
+    print("The App Password 'ehtcrkyellbgwbvy' is INCORRECT or your Gmail account has security blocks.")
+    print(f"Detailed Error: {e}")
+except Exception as e:
+    print(f"\n🔥🔥🔥 An unexpected error occurred: {e}")
+
+print("--- शाही लेखकको प्रत्यक्ष परीक्षा समाप्त ---")

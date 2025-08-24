@@ -1,3 +1,7 @@
-# Only the absolute essentials for life
+# Essentials for life and communication
 Flask
 gunicorn
+
+# Tools for the Hunter
+requests
+pandas
