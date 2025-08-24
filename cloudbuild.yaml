@@ -1,19 +1,34 @@
-timeout: "3600s"  # 1 hour
-
-substitutions:
-  _COMMIT_SHA: "latest"
-
 steps:
-# Step 1: Build Docker image
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'build'
-    - '-t'
-    - 'us-docker.pkg.dev/$PROJECT_ID/omega-prime-repo/omega-prime-agent:$_COMMIT_SHA'
-    - '.'
+  # Step 1: Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:$COMMIT_SHA', '.']
 
-# Step 2: Push Docker image to Artifact Registry
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'push'
-    - 'us-docker.pkg.dev/$PROJECT_ID/omega-prime-repo/omega-prime-agent:$_COMMIT_SHA'
+  # Step 2: Push the container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:$COMMIT_SHA']
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'omega-prime-service'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--service-account'
+      - '143047795970-compute@developer.gserviceaccount.com'
+
+# Store the image name
+images:
+  - 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:$COMMIT_SHA'
+
+# --- THE FINAL VICTORY ---
+# Tell Cloud Build to send logs directly to Cloud Logging
+options:
+  logging: CLOUD_LOGGING_ONLY
