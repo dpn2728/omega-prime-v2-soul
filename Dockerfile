@@ -4,4 +4,5 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-CMD exec gunicorn --bind :8080 --workers 1 --threads 8 --timeout 300 main:app
+# The Law of Patience for the Soldier: 15 minutes (900 seconds)
+CMD exec gunicorn --bind :${PORT:-8080} --workers 1 --threads 8 --timeout 900 main:app

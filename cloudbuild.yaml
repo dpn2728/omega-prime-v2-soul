@@ -1,8 +1,13 @@
+# The Law of Patience for the Factory: 30 minutes
+timeout: 1800s
+
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:', '.']
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:${SHORT_SHA}', '.']
+  
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:']
+    args: ['push', 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:${SHORT_SHA}']
+  
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -10,7 +15,7 @@ steps:
       - 'deploy'
       - 'omega-prime-service'
       - '--image'
-      - 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:'
+      - 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:${SHORT_SHA}'
       - '--region'
       - 'us-central1'
       - '--platform'
@@ -19,7 +24,9 @@ steps:
       - '--service-account'
       - '143047795970-compute@developer.gserviceaccount.com'
       - '--set-secrets=OMEGA_PRIME_EMAIL_PASSWORD=omega-prime-email-password:latest'
+      
 images:
-  - 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:'
+  - 'us-central1-docker.pkg.dev/omegaprimeai/omega-prime-repo/omega-prime-service:${SHORT_SHA}'
+  
 options:
   logging: CLOUD_LOGGING_ONLY
