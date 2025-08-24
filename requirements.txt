@@ -27,3 +27,4 @@ pandas-ta
 # --- Utilities ---
 # pytz for handling timezones correctly
 pytz
+google-auth
