@@ -1,70 +1,63 @@
-import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from google.cloud import secretmanager
-import google.auth
 
-def get_project_id():
-    print("[DEBUG] Attempting to get project ID...")
-    try:
-        _, project_id = google.auth.default()
-        print(f"[DEBUG] Successfully found Project ID: {project_id}")
-        return project_id
-    except google.auth.exceptions.DefaultCredentialsError as e:
-        print(f"🔥 FATAL: Could not automatically determine GCP Project ID. Error: {e}")
-        return None
-
-PROJECT_ID = get_project_id()
+# --- प्रत्यक्ष शाही कन्फिगरेसन (नयाँ साँचो सहित) ---
 EMAIL_SENDER = "dpn2728@gmail.com"
 EMAIL_RECEIVER = "dpn2728@gmail.com"
-EMAIL_PASSWORD_SECRET_ID = "omega-prime-email-password"
 
-def get_email_password():
-    print("[DEBUG] Attempting to get email password from Secret Manager...")
-    if not PROJECT_ID:
-        print("[DEBUG] Cannot get password, PROJECT_ID is missing.")
-        return None
-    try:
-        client = secretmanager.SecretManagerServiceClient()
-        secret_name = f"projects/{PROJECT_ID}/secrets/{EMAIL_PASSWORD_SECRET_ID}/versions/latest"
-        print(f"[DEBUG] Accessing secret: {secret_name}")
-        response = client.access_secret_version(name=secret_name)
-        password = response.payload.data.decode("UTF-8")
-        print("[DEBUG] Successfully retrieved password.")
-        # सुरक्षाको लागि, पासवर्डको केही अंश मात्र लग गर्ने
-        print(f"[DEBUG] Password starts with: {password[:2]}... ends with: {password[-2:]}")
-        return password
-    except Exception as e:
-        print(f"🔥 FATAL: Could not access the sacred password. Error: {e}")
-        return None
+# सम्राटद्वारा प्रदान गरिएको नयाँ, शक्तिशाली शाही साँचो
+EMAIL_PASSWORD = "ehtcrkyellbgwbvy" 
 
 def format_genesis_email(directive):
-    # ... (यो फंक्सन जस्ताको तस्तै रहनेछ) ...
+    """
+    'Genesis' आदेशको लागि इमेलको विषय र मुख्य भाग बनाउँछ।
+    """
     subject = f"🔥 Omega Prime Genesis Directive | {directive.get('coin_name', 'N/A')}"
-    body = "..." # (For brevity)
+    body = f"""
+    🔥 Omega Prime - जेनेसिस आदेश 🔥
+    =================================
+    Directive Type: {directive.get('type')}
+    Coin: {directive.get('coin_name', 'N/A')} ({directive.get('coin_symbol', 'N/A')})
+    Current Price: ${directive.get('current_price', 0):.4f}
+    24h Change: {directive.get('price_change_24h', 0):.2f}%
+
+    Reasoning:
+    {directive.get('reason', 'No specific reason provided.')}
+    """
     return subject, body
 
 def format_hold_email(directive):
-    # ... (यो फंक्सन जस्ताको तस्तै रहनेछ) ...
+    """
+    'Hold' आदेशको लागि इमेलको विषय र मुख्य भाग बनाउँछ।
+    """
     subject = "Holding Position | Omega Prime Market Intel"
-    body = "..." # (For brevity)
+    body = f"""
+    🛡️ Omega Prime - होल्ड आदेश 🛡️
+    =================================
+    Directive Type: {directive.get('type')}
+    
+    Reasoning:
+    {directive.get('reason', 'No specific reason provided.')}
+
+    Capital is preserved. Patience is a virtue.
+    """
     return subject, body
 
 def send_decree(directive):
-    print("[DEBUG] send_decree function initiated.")
-    password = get_email_password()
-    if not password:
-        print("SCRIBE: Halting process. Password not available.")
-        return
-
+    """
+    मुख्य फंक्सन: प्राप्त आदेशको आधारमा सही इमेल पठाउँछ।
+    """
+    print("SCRIBE: The Royal Scribe is preparing the decree with the NEW key.")
+    
     directive_type = directive.get('type')
-    if directive_type not in ["GENESIS", "HOLD"]:
+    if directive_type == "GENESIS":
+        subject, body = format_genesis_email(directive)
+    elif directive_type == "HOLD":
+        subject, body = format_hold_email(directive)
+    else:
         print(f"SCRIBE: Unknown directive type '{directive_type}'. Halting.")
         return
-
-    print(f"[DEBUG] Formatting email for directive type: {directive_type}")
-    subject, body = (format_genesis_email(directive) if directive_type == "GENESIS" else format_hold_email(directive))
 
     try:
         msg = MIMEMultipart()
@@ -73,25 +66,16 @@ def send_decree(directive):
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain'))
 
-        print("[DEBUG] Connecting to SMTP server: smtp.gmail.com:465")
+        print("Connecting to smtp.gmail.com:465...")
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        print("[DEBUG] SMTP server connection successful.")
-        
-        print("[DEBUG] Logging into SMTP server...")
-        server.login(EMAIL_SENDER, password)
-        print("[DEBUG] SMTP login successful.")
-
-        print("[DEBUG] Sending the email...")
+        print("Connection successful. Logging in with new key...")
+        server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+        print("Login successful. Sending email...")
         server.send_message(msg)
-        print("[DEBUG] Email sent command issued.")
-
         server.quit()
         print(f"✅ DECREE SENT: The '{directive_type}' decree has been successfully dispatched.")
 
     except smtplib.SMTPAuthenticationError as e:
-        print(f"🔥 FATAL SMTP ERROR: Authentication failed. CHECK YOUR APP PASSWORD. Error: {e}")
+        print(f"🔥 FATAL SMTP ERROR: Authentication failed. The NEW password 'ehtc...wbvy' is INCORRECT. Please generate a new App Password. Error: {e}")
     except Exception as e:
         print(f"🔥 FATAL EMAIL ERROR: An unexpected error occurred. Error: {e}")
-
-# (format_genesis_email र format_hold_email को पूरा शरीर यहाँ समावेश हुनेछ)
-# ...
