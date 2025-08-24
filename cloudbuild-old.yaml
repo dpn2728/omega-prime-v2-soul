@@ -1,0 +1,22 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'us-docker.pkg.dev/$PROJECT_ID/omega-prime-repo/omega-prime-agent:$COMMIT_SHA', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-docker.pkg.dev/$PROJECT_ID/omega-prime-repo/omega-prime-agent:$COMMIT_SHA']
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+    - 'run'
+    - 'deploy'
+    - 'omega-prime-service'
+    - '--image'
+    - 'us-docker.pkg.dev/$PROJECT_ID/omega-prime-repo/omega-prime-agent:$COMMIT_SHA'
+    - '--region'
+    - 'us-central1'
+    - '--platform'
+    - 'managed'
+    - '--allow-unauthenticated'
+images:
+- 'us-docker.pkg.dev/$PROJECT_ID/omega-prime-repo/omega-prime-agent:$COMMIT_SHA'

@@ -1,23 +1,20 @@
-# Use an official lightweight Python image as a base.
+# Base Python image
 FROM python:3.11-slim
 
-# Set the working directory inside the container.
+# Set working directory
 WORKDIR /app
 
-# Set environment variables to ensure logs are sent correctly.
-ENV PYTHONUNBUFFERED True
+# Ensure logs are printed immediately
+ENV PYTHONUNBUFFERED=1
 
-# Copy the list of required tools into the container.
-COPY requirements.txt requirements.txt
+# Copy dependencies
+COPY requirements.txt .
 
-# Install the tools.
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire kingdom's code into the container.
+# Copy the rest of the code
 COPY . .
 
-# The final command to make the AI alive.
-# Use Gunicorn, the professional server, to run our main application (main:app).
-# It will automatically listen on the port provided by Cloud Run ($PORT).
-# We set a long timeout (300 seconds) to allow for complex thinking.
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 300 main:app
+# CMD for Cloud Run (Gunicorn listens on $PORT at runtime)
+CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "--workers", "1", "--threads", "8", "--timeout", "300", "main:app"]
