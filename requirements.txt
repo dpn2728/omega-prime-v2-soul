@@ -1,7 +1,5 @@
-# Essentials for life and communication
 Flask
 gunicorn
-
-# Tools for the Hunter
 requests
 pandas
+google-auth
