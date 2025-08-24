@@ -2,59 +2,30 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-# --- प्रत्यक्ष शाही कन्फिगरेसन (प्रमाणित र सफल) ---
 EMAIL_SENDER = "dpn2728@gmail.com"
 EMAIL_RECEIVER = "dpn2728@gmail.com"
-EMAIL_PASSWORD = "ehtcrkyellbgwbvy" # This key is proven to work.
+EMAIL_PASSWORD = "ehtcrkyellbgwbvy"
 
-def format_genesis_email(directive):
-    subject = f"🔥 Omega Prime Genesis Directive | {directive.get('coin_name', 'N/A')}"
-    body = f"""
-    🔥 Omega Prime - जेनेसिस आदेश 🔥
-    =================================
-    Directive Type: {directive.get('type')}
-    Coin: {directive.get('coin_name', 'N/A')} ({directive.get('coin_symbol', 'N/A')})
-    Current Price: ${directive.get('current_price', 0):.4f}
-    24h Change: {directive.get('price_change_24h', 0):.2f}%
-    Reasoning: {directive.get('reason', 'No specific reason provided.')}
-    """
-    return subject, body
-
-def format_hold_email(directive):
-    subject = "🛡️ Omega Prime - होल्ड आदेश 🛡️"
-    body = f"""
-    🛡️ Omega Prime - होल्ड आदेश 🛡️
-    =================================
-    Directive Type: {directive.get('type')}
-    Reasoning: {directive.get('reason', 'No specific reason provided.')}
-    Capital is preserved. Patience is a virtue.
-    """
-    return subject, body
-
-def send_decree(directive):
-    print("SCRIBE: The Royal Scribe is preparing the decree using PROVEN credentials.")
-    
-    directive_type = directive.get('type')
-    if directive_type == "GENESIS":
-        subject, body = format_genesis_email(directive)
-    elif directive_type == "HOLD":
-        subject, body = format_hold_email(directive)
-    else:
-        print(f"SCRIBE: Unknown directive type '{directive_type}'. Halting.")
-        return
-
+def send_test_decree():
     try:
+        subject = "Omega Prime - VICTORY IS AT HAND"
+        body = "सम्राट, यदि तपाईंले यो प्राप्त गर्नुभयो भने, हाम्रो जेनेसिस ब्लक सफल भयो। शाही लेखक जीवित छ।"
+        
         msg = MIMEMultipart()
         msg['From'] = EMAIL_SENDER
         msg['To'] = EMAIL_RECEIVER
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain'))
 
+        print("SCRIBE: Connecting to Gmail...")
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        print("SCRIBE: Logging in with the proven key...")
         server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+        print("SCRIBE: LOGIN SUCCESSFUL. Sending the final proof...")
         server.send_message(msg)
         server.quit()
-        print(f"✅ DECREE SENT: The '{directive_type}' decree has been successfully dispatched to the Emperor.")
-
+        print("✅ VICTORY: The test decree has been dispatched!")
+        return True
     except Exception as e:
-        print(f"🔥 FATAL EMAIL ERROR: An unexpected error occurred. Error: {e}")
+        print(f"🔥 DEFEAT: The Scribe has fallen. The final enemy is: {e}")
+        return False
