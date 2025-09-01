@@ -1,44 +1,69 @@
-import pandas as pd
+# model.py (Final Version - Ready for AI Integration)
 
-def generate_directive(market_data):
+import numpy as np
+
+def generate_conviction_score(coin_details: dict, config: dict) -> float:
     """
-    यो ओमेगा प्राइमको शिकारी मस्तिष्क हो।
-    यसले बजार डाटाको विश्लेषण गरेर 'Genesis' वा 'Hold' को निर्णय लिन्छ।
+    The Ultimate Quantum Brain v2.0. Analyzes metrics using a dynamic, multi-factor,
+    risk-adjusted scoring model.
     """
-    print("MIND: The hunter's brain is analyzing the captured data...")
+    score = 0
     
-    # यदि आँखाले केही देखेन भने (डाटा खाली छ), सुरक्षित रहन 'Hold' गर्ने
-    if not market_data:
-        print("MIND: Analysis complete. The data is empty. Directive is HOLD.")
-        return {"type": "HOLD", "reason": "Failed to capture any market data from the Senses."}
+    # --- 1. Safe Data Extraction ---
+    change_24h = coin_details.get('percent_change_24h')
+    volume_24h = coin_details.get('total_volume_usd')
+    market_cap = coin_details.get('market_cap_usd')
+    rsi = coin_details.get('rsi')
+    sma_fast = coin_details.get('sma_fast')
+    sma_slow = coin_details.get('sma_slow')
     
-    # विश्लेषणको लागि डाटालाई Pandas DataFrame मा रूपान्तरण गर्ने
-    df = pd.DataFrame(market_data)
+    # --- 2. Pre-condition Penalties (Critical Risk Factors) ---
+    if isinstance(change_24h, (int, float)) and change_24h < 0:
+        return 0.0 # Hard filter for negative momentum coins
+
+    if rsi is not None and rsi >= 80:
+        return 5.0 # Very low score for extreme overbought condition
+
+    # --- 3. Weighted Scoring Modules ---
     
-    # 'price_change_percentage_24h' स्तम्भमा कुनै खाली मान भए, त्यसलाई ० ले भर्ने
-    df['price_change_percentage_24h'] = df['price_change_percentage_24h'].fillna(0)
+    # Price Momentum
+    if isinstance(change_24h, (int, float)):
+        if change_24h > 25: score += 30
+        elif change_24h > 15: score += 20
+        elif change_24h > 10: score += 10
+
+    # Volume Velocity
+    if isinstance(volume_24h, (int, float)) and isinstance(market_cap, (int, float)) and market_cap > 1000000:
+        volume_mc_ratio = (volume_24h / market_cap) * 100
+        if volume_mc_ratio > 100: score += 25
+        elif volume_mc_ratio > 50: score += 15
+
+    # Trend Consistency & Strength (SMA Crossover)
+    if isinstance(sma_fast, (int, float)) and isinstance(sma_slow, (int, float)) and sma_fast > sma_slow:
+        crossover_strength = ((sma_fast - sma_slow) / sma_slow) * 100
+        if crossover_strength > 5: score += 20
+        elif crossover_strength > 1: score += 10
     
-    # --- शिकारको नियम ---
-    # नियम: १०% भन्दा बढी तर ३०% भन्दा कमले बढेको कोइन खोज्ने
-    candidates = df[
-        (df['price_change_percentage_24h'] > 10) & 
-        (df['price_change_percentage_24h'] < 30)
-    ]
-    
-    # --- निर्णय ---
-    if not candidates.empty:
-        # यदि उम्मेदवार भेटियो भने, सबैभन्दा बढी बढेकोलाई छान्ने
-        best_candidate = candidates.sort_values(by='price_change_percentage_24h', ascending=False).iloc[0]
-        candidate_name = best_candidate['name']
-        change_percent = best_candidate['price_change_percentage_24h']
+    # RSI Condition
+    if rsi is not None:
+        if 60 <= rsi < 70: score += 15
+        elif rsi >= 70: score -= 10
+
+    # Market Cap Bonus
+    if isinstance(market_cap, (int, float)) and market_cap > 1_000_000_000:
+        score += 5
         
-        print(f"MIND: Analysis complete. GENESIS candidate found: {candidate_name}")
-        return {
-            "type": "GENESIS",
-            "coin_name": candidate_name,
-            "reason": f"Price increased by a promising {change_percent:.2f}% in the last 24 hours."
-        }
-    else:
-        # यदि कुनै उम्मेदवार भेटिएन भने, 'Hold' गर्ने
-        print("MIND: Analysis complete. No suitable candidate found. Directive is HOLD.")
-        return {"type": "HOLD", "reason": "No coins met the Genesis criteria (10% < change < 30%)."}
+    # --- 4. Final Score Clamping ---
+    final_score = np.clip(score, 0, 100)
+    
+    return float(final_score)
+
+def get_predictive_analysis(coin_details: dict) -> float:
+    """
+    Placeholder for future, true AI/ML predictive models.
+    This function will be replaced with a neural network or similar model
+    that analyzes historical data to predict future price movements.
+    
+    For now, it returns a neutral, non-influential score.
+    """
+    return 50.0

@@ -1,0 +1,12 @@
+[
+    {
+        "symbol": "GOOD",
+        "final_verdict": "APPROVED",
+        "confidence": 95
+    },
+    {
+        "symbol": "RISK",
+        "final_verdict": "REJECTED",
+        "confidence": 40
+    }
+]

@@ -1,0 +1,25 @@
+# --- The Treasure Vault ---
+# NEVER commit this file. It contains all secrets.
+omega_secrets.py
+
+# --- Python & Environment ---
+venv/
+__pycache__/
+*.pyc
+
+# --- System & Logs ---
+logs/
+*.log
+sent_directives.log
+
+# --- Backups & Temporary Files ---
+.update_lock
+backup_archive/
+
+# --- Data Storage ---
+data_storage/
+
+# --- IDE/Editor specific files ---
+.idea/
+.vscode/
+Miniconda3-latest-Linux-x86_64.sh
